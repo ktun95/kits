@@ -1,6 +1,15 @@
+schemaVersion: "1"
+kind: mixin
 name: vertex-ai
-description: Environment variables for Vertex AI configuration
-env:
-  GOOGLE_APPLICATION_CREDENTIALS: ~/.credentials/vertex-ai-user.json
-  CLAUDE_CODE_USE_VERTEX: "1"
-  CLOUD_ML_REGION: us-east5
+displayName: Vertex AI Configuration
+description: Environment variables for Google Vertex AI integration with Claude Code
+
+environment:
+  variables:
+    GOOGLE_APPLICATION_CREDENTIALS: /home/agent/.credentials/vertex-ai-user.json
+    CLAUDE_CODE_USE_VERTEX: "1"
+    CLOUD_ML_REGION: us-east5
+
+agentContext: |
+  Vertex AI is configured with credentials at $GOOGLE_APPLICATION_CREDENTIALS.
+  Region: $CLOUD_ML_REGION

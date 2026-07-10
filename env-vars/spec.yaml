@@ -1,0 +1,6 @@
+name: vertex-ai
+description: Environment variables for Vertex AI configuration
+env:
+  GOOGLE_APPLICATION_CREDENTIALS: ~/.credentials/vertex-ai-user.json
+  CLAUDE_CODE_USE_VERTEX: "1"
+  CLOUD_ML_REGION: us-east5

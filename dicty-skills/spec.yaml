@@ -1,0 +1,28 @@
+schemaVersion: "2"
+kind: mixin
+name: dicty-skills
+displayName: dictyBase Agent Skills
+description: Clones dictyBase/agent-skills and installs its skills into ~/.claude/skills so Claude can use them.
+
+# Cloning over HTTPS from GitHub.
+caps:
+  network:
+    allow:
+      - github.com
+      - codeload.github.com
+
+commands:
+  # Runs once at creation: clone the repo to a cache location.
+  install:
+    - command: "git clone --depth 1 https://github.com/dictyBase/agent-skills.git /opt/dicty-agent-skills"
+      description: Clone dictyBase/agent-skills
+
+  # Runs each start (idempotent): refresh clone and sync skills into ~/.claude/skills.
+  startup:
+    - command: ["sh", "-c", "git -C /opt/dicty-agent-skills pull --ff-only || true; mkdir -p \"$HOME/.claude/skills\"; cp -R /opt/dicty-agent-skills/skills/. \"$HOME/.claude/skills/\""]
+      description: Install/refresh dictyBase skills into ~/.claude/skills
+
+agentContext: |
+  The dictyBase agent skills are installed under ~/.claude/skills.
+  Invoke any of them by name as a /<skill-name> slash command
+  (e.g. /check-style, /create-component, /create-tests).

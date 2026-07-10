@@ -1,0 +1,39 @@
+schemaVersion: "2"
+kind: mixin
+name: rtk
+displayName: RTK (Rust Token Killer)
+description: Installs the rtk CLI proxy and wires it into the agent as a PreToolUse hook to cut dev-command token usage by 60-90%.
+
+# rtk's install.sh pulls a prebuilt binary from GitHub releases.
+caps:
+  network:
+    allow:
+      - raw.githubusercontent.com   # install.sh
+      - github.com                  # release redirects
+      - objects.githubusercontent.com # release asset downloads
+
+commands:
+  # Runs once at sandbox creation: fetch and install the rtk binary.
+  install:
+    - command: "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh"
+      description: Install the rtk binary
+
+  # Runs on every start (idempotent): install/refresh the Claude Code hook.
+  # --auto-patch is non-interactive; --hook-only skips writing RTK.md into the workspace.
+  startup:
+    - command: ["rtk", "init", "-g", "--auto-patch", "--hook-only"]
+      description: Install/refresh the rtk PreToolUse hook
+
+agentContext: |
+  rtk (Rust Token Killer) is installed and active as a PreToolUse hook.
+  Bash commands (git, ls, grep, find, test runners, linters, docker, etc.)
+  are transparently rewritten to their compact `rtk <cmd>` equivalents — no
+  action needed on your part.
+
+  Note: the hook only fires on Bash tool calls. The built-in Read, Grep, and
+  Glob tools bypass it, so to get filtered output for those use shell commands
+  or the explicit `rtk read` / `rtk grep` / `rtk find` forms.
+
+  Meta commands: `rtk gain` (token-savings analytics), `rtk gain --history`,
+  `rtk discover` (find missed opportunities), `rtk proxy <cmd>` (run raw,
+  unfiltered).
